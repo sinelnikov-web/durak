@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Дурак — помощник</title>
+  <meta name="description" content="Отмечайте сброшенные карты и следите, какие ещё в игре. Работает офлайн.">
+  <meta name="theme-color" content="#33141f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Дурак">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=PT+Sans+Narrow:wght@700&display=swap">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand__mark" aria-hidden="true">Д</span>
+      <span class="brand__name">Дурак<span class="brand__sub">помощник</span></span>
+    </div>
+    <button class="deckswitch" id="deckBtn" type="button" aria-haspopup="dialog">
+      Колода <b id="deckBtnSize">36</b>
+    </button>
+  </header>
+
+  <section class="tally" aria-live="polite">
+    <div class="tally__main">
+      <span class="tally__num" id="tallyIn">36</span>
+      <span class="tally__label">в игре</span>
+    </div>
+    <div class="tally__side">
+      <span class="tally__num tally__num--dim" id="tallyOut">0</span>
+      <span class="tally__label">сброшено</span>
+    </div>
+    <div class="tally__trump" id="trumpBadge">
+      <span class="tally__label">козырь</span>
+      <span class="tally__suit" id="trumpSuitGlyph">—</span>
+    </div>
+  </section>
+
+  <p class="hint" id="hint" hidden>Нажмите на карту, когда её увидели на столе, — она уйдёт из счёта. Нажмите ещё раз, чтобы вернуть.</p>
+
+  <main class="table" id="table"></main>
+
+  <nav class="actions">
+    <button class="btn" id="undoBtn" type="button" disabled>Отменить</button>
+    <button class="btn btn--primary" id="newGameBtn" type="button">Новая игра</button>
+  </nav>
+
+  <div class="sheet" id="deckSheet" hidden role="dialog" aria-modal="true" aria-labelledby="deckSheetTitle">
+    <div class="sheet__panel">
+      <h2 class="sheet__title" id="deckSheetTitle">Размер колоды</h2>
+      <div class="seg" role="radiogroup" aria-label="Размер колоды">
+        <button class="seg__opt" id="seg36" type="button" role="radio">36 карт<span>6 … Т</span></button>
+        <button class="seg__opt" id="seg52" type="button" role="radio">52 карты<span>2 … Т</span></button>
+      </div>
+      <p class="sheet__note" id="deckSheetNote">Смена колоды начнёт новую игру.</p>
+      <div class="sheet__row">
+        <button class="btn" id="deckCancel" type="button">Отмена</button>
+        <button class="btn btn--primary" id="deckApply" type="button">Выбрать</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

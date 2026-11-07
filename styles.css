@@ -1,0 +1,516 @@
+/* ============================================================
+   Дурак — помощник · дизайн-токены
+   Палитра атласной колоды: бордо рубашек, старинное золото,
+   костяной картон, чернила и кармин мастей.
+   ============================================================ */
+:root {
+  --wine-950: #260e17;
+  --wine-900: #33141f;
+  --wine-800: #421a28;
+  --wine-700: #55202f;
+  --gold: #d4af6a;
+  --gold-dim: #9a7f4a;
+  --gold-faint: rgba(212, 175, 106, 0.16);
+  --ivory: #f3ecdc;
+  --ivory-edge: #d8cbb2;
+  --ink: #2a2320;
+  --carmine: #c13b4a;
+  --red-bright: #e4636f; /* масть на тёмном фоне */
+  --text: #efe3d0;
+  --text-dim: rgba(239, 227, 208, 0.55);
+  --text-faint: rgba(239, 227, 208, 0.34);
+  --font-body: "PT Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-card: "PT Sans Narrow", "PT Sans", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+/* display-правила не должны перебивать атрибут hidden */
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  background-color: var(--wine-900);
+  /* тихий узор рубашки карт — золотая решётка */
+  background-image:
+    repeating-linear-gradient(45deg, var(--gold-faint) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(-45deg, var(--gold-faint) 0 1px, transparent 1px 22px);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---------- верхняя полоса ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 10px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 7px;
+  font-family: var(--font-card);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--gold);
+  background: var(--wine-800);
+}
+
+.brand__name {
+  font-family: var(--font-card);
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.brand__sub {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  line-height: 1.1;
+}
+
+.deckswitch {
+  flex: none;
+  padding: 8px 12px;
+  border: 1px solid var(--wine-700);
+  border-radius: 999px;
+  background: var(--wine-800);
+  color: var(--text-dim);
+  font-size: 14px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.deckswitch b {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.deckswitch:active { border-color: var(--gold-dim); }
+
+/* ---------- счёт ---------- */
+
+.tally {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 4px 16px 14px;
+  padding: 10px 14px;
+  background: var(--wine-800);
+  border: 1px solid var(--wine-700);
+  border-radius: 12px;
+}
+
+.tally__main,
+.tally__side {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-right: 14px;
+}
+
+.tally__side {
+  border-left: 1px solid var(--wine-700);
+  padding-left: 14px;
+}
+
+.tally__num {
+  font-family: var(--font-card);
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.tally__num--dim {
+  color: var(--text-dim);
+  font-size: 22px;
+}
+
+.tally__label {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.tally__trump {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  margin-left: auto;
+  gap: 2px;
+  min-width: 48px;
+}
+
+.tally__trump .tally__label { letter-spacing: 0.1em; text-transform: uppercase; font-size: 10px; }
+
+.tally__suit {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.tally__suit.is-red { color: var(--red-bright); }
+.tally__suit.is-black { color: var(--text); }
+.tally__suit.is-empty { color: var(--text-faint); font-size: 20px; }
+
+/* ---------- подсказка ---------- */
+
+.hint {
+  margin: -6px 16px 12px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+
+/* ---------- стол: масть = колонка (телефон), строка (широко) ---------- */
+
+.table {
+  flex: 1;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 6px 16px 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+
+.suit {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.suit__head {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--wine-700);
+  border-radius: 10px;
+  background: var(--wine-800);
+  font-size: 20px;
+  line-height: 1;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.suit__head.is-red { color: var(--red-bright); }
+.suit__head.is-black { color: var(--text); }
+
+.suit__head:active { border-color: var(--gold-dim); }
+
+.suit__head .suit__crown {
+  position: absolute;
+  top: -8px;
+  left: -5px;
+  display: none;
+  font-size: 13px;
+  color: var(--gold);
+  background: var(--wine-900);
+  border-radius: 50%;
+  line-height: 1;
+  padding: 1px;
+}
+
+.suit.is-trump .suit__head {
+  border-color: var(--gold-dim);
+  background: var(--gold-faint);
+}
+
+.suit.is-trump .suit__crown { display: block; }
+
+.suit__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.suit__count {
+  margin-top: 2px;
+  align-self: flex-end;
+  font-family: var(--font-card);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+  padding: 0 2px;
+}
+
+/* ---------- фишка-карта ---------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  padding: 0 4px;
+  border-radius: 8px;
+  border: 1px solid var(--ivory-edge);
+  background: linear-gradient(180deg, var(--ivory) 0%, #ece2cd 100%);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
+  font-family: var(--font-card);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1;
+  position: relative;
+  transition: transform 0.12s ease, opacity 0.12s ease, background-color 0.12s ease;
+}
+
+.chip__rank { letter-spacing: 0.01em; }
+.chip__suit { font-size: 16px; }
+
+.chip.is-red { color: var(--carmine); }
+.chip.is-black { color: var(--ink); }
+
+.chip:active { transform: translateY(1px); }
+
+/* козырная масть — золотой кант */
+.chip.is-trump { border-color: var(--gold-dim); box-shadow: 0 1px 0 rgba(0,0,0,.28), inset 0 0 0 1px var(--gold-faint); }
+
+/* сброшенная карта — легла рубашкой вверх */
+.chip.is-played {
+  background: var(--wine-700);
+  border-color: var(--wine-950);
+  color: var(--ivory);
+  opacity: 0.42;
+  box-shadow: none;
+  transform: scale(0.94);
+}
+
+.chip.is-played::after {
+  content: "";
+  position: absolute;
+  left: -6%;
+  top: 50%;
+  width: 112%;
+  height: 1.5px;
+  background: var(--gold-dim);
+  transform: rotate(-32deg);
+}
+
+.chip.is-played.is-trump { box-shadow: none; }
+
+/* ---------- нижние действия ---------- */
+
+.actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 10px;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, var(--wine-900) 38%);
+}
+
+.btn {
+  flex: 1;
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid var(--wine-700);
+  background: var(--wine-800);
+  font-size: 16px;
+  transition: opacity 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.btn:disabled { opacity: 0.4; }
+
+.btn--primary {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--wine-950);
+  font-weight: 700;
+}
+
+.btn--danger {
+  background: var(--carmine);
+  border-color: var(--carmine);
+  color: var(--ivory);
+  font-weight: 700;
+}
+
+/* ---------- лист выбора колоды ---------- */
+
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(18, 6, 11, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.sheet__panel {
+  width: calc(100% - 24px);
+  max-width: 480px;
+  margin: 0 12px;
+  background: var(--wine-800);
+  border-top: 1px solid var(--gold-dim);
+  border-radius: 16px 16px 0 0;
+  padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
+}
+
+.sheet__title {
+  margin: 0 0 12px;
+  font-family: var(--font-card);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.seg__opt {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px;
+  border: 1px solid var(--wine-700);
+  border-radius: 10px;
+  background: var(--wine-900);
+  font-weight: 700;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.seg__opt span {
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.seg__opt[aria-checked="true"] {
+  border-color: var(--gold);
+  background: var(--gold-faint);
+}
+
+.sheet__note {
+  margin: 12px 0 14px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+
+.sheet__row {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---------- тост ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 40;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--wine-950);
+  border: 1px solid var(--gold-dim);
+  color: var(--text);
+  font-size: 14px;
+  max-width: 86vw;
+  text-align: center;
+}
+
+/* ---------- широко: масть = строка ---------- */
+
+@media (min-width: 720px) {
+  .table {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .suit {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .suit__head {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    flex: none;
+  }
+
+  .suit__cards {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .chip {
+    width: auto;
+    min-width: 50px;
+    height: 48px;
+    font-size: 20px;
+    padding: 0 9px;
+  }
+
+  .suit__count {
+    margin: 0 0 0 auto;
+    align-self: center;
+    font-size: 16px;
+  }
+
+  .actions { max-width: 760px; margin: 0 auto; width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
