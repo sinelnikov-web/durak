@@ -23,7 +23,7 @@
   };
 
   function defaultState() {
-    return { v: 1, deck: 36, trump: null, played: [], history: [], guided: false };
+    return { v: 1, deck: 36, trump: null, played: [], bout: [], history: [], guided: false };
   }
 
   function loadState() {
@@ -33,6 +33,7 @@
       var s = JSON.parse(raw);
       if (!s || s.v !== 1 || !RANKS[s.deck]) return defaultState();
       if (!Array.isArray(s.played)) s.played = [];
+      if (!Array.isArray(s.bout)) s.bout = []; // состояния до появления боёв
       if (!Array.isArray(s.history)) s.history = [];
       return s;
     } catch (e) {
@@ -55,6 +56,8 @@
     trumpSuit: document.getElementById("trumpSuitGlyph"),
     hint: document.getElementById("hint"),
     undo: document.getElementById("undoBtn"),
+    take: document.getElementById("takeBtn"),
+    endBout: document.getElementById("endBoutBtn"),
     newGame: document.getElementById("newGameBtn"),
     deckBtn: document.getElementById("deckBtn"),
     deckBtnSize: document.getElementById("deckBtnSize"),
@@ -89,6 +92,21 @@
   }
 
   function isPlayed(id) { return state.played.indexOf(id) !== -1; }
+
+  function inBout(id) { return state.bout.indexOf(id) !== -1; }
+
+  function removeFrom(arr, id) {
+    var i = arr.indexOf(id);
+    if (i !== -1) arr.splice(i, 1);
+  }
+
+  /* 1 карта / 2 карты / 5 карт */
+  function plural(n, one, few, many) {
+    var m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+    return many;
+  }
 
   function toast(msg) {
     el.toast.textContent = msg;
@@ -190,10 +208,24 @@
         if (!b) return;
         b.classList.toggle("is-played", isPlayed(id));
         b.classList.toggle("is-trump", state.trump === suit.id);
+        b.classList.toggle("is-bout", inBout(id));
         b.setAttribute("aria-pressed", isPlayed(id) ? "true" : "false");
         updateChipLabel(b, id);
       });
     });
+
+    // кнопки исхода боя
+    var n = state.bout.length;
+    el.take.disabled = n === 0;
+    el.endBout.disabled = n === 0;
+    el.take.textContent = n ? "Взял (" + n + ")" : "Взял";
+    el.endBout.textContent = n ? "В отбой (" + n + ")" : "В отбой";
+    el.take.setAttribute("aria-label", n
+      ? "Взял — вернуть " + n + " " + plural(n, "карту", "карты", "карт") + " боя в игру"
+      : "Взял — защитник забрал карты боя");
+    el.endBout.setAttribute("aria-label", n
+      ? "В отбой — карты боя вышли из игры"
+      : "В отбой — закончить бой");
 
     el.undo.disabled = state.history.length === 0;
     el.hint.hidden = state.guided || state.played.length > 0;
@@ -208,16 +240,41 @@
 
   function toggleCard(id) {
     state.guided = true;
-    var i = state.played.indexOf(id);
-    if (i === -1) {
+    if (!isPlayed(id)) {
       state.played.push(id);
-      pushHistory({ t: "card", id: id, played: false });
+      state.bout.push(id); // новая карта на столе — часть текущего боя
+      pushHistory({ t: "card", id: id, toPlayed: true });
     } else {
-      state.played.splice(i, 1);
-      pushHistory({ t: "card", id: id, played: true });
+      removeFrom(state.played, id);
+      var wasInBout = inBout(id);
+      if (wasInBout) removeFrom(state.bout, id);
+      pushHistory({ t: "card", id: id, toPlayed: false, wasInBout: wasInBout });
     }
     saveState();
     updateAll();
+  }
+
+  /* защитник забрал карты боя — они возвращаются в игру */
+  function takeBout() {
+    if (!state.bout.length) return;
+    var cards = state.bout.slice();
+    pushHistory({ t: "take", cards: cards });
+    cards.forEach(function (id) { removeFrom(state.played, id); });
+    state.bout = [];
+    saveState();
+    updateAll();
+    toast("Вернул " + cards.length + " " + plural(cards.length, "карту", "карты", "карт") + " в игру");
+  }
+
+  /* бой отбит — карты выходят из игры окончательно */
+  function endBout() {
+    if (!state.bout.length) return;
+    var cards = state.bout.slice();
+    pushHistory({ t: "end", cards: cards });
+    state.bout = [];
+    saveState();
+    updateAll();
+    toast("Отбой: " + cards.length + " " + plural(cards.length, "карта", "карты", "карт"));
   }
 
   function setTrump(suitId) {
@@ -231,8 +288,9 @@
   }
 
   function newGame() {
-    pushHistory({ t: "new", snap: JSON.stringify({ deck: state.deck, trump: state.trump, played: state.played }) });
+    pushHistory({ t: "new", snap: JSON.stringify({ deck: state.deck, trump: state.trump, played: state.played, bout: state.bout }) });
     state.played = [];
+    state.bout = [];
     state.trump = null;
     saveState();
     renderTable();
@@ -243,9 +301,20 @@
     var h = state.history.pop();
     if (!h) return;
     if (h.t === "card") {
-      var i = state.played.indexOf(h.id);
-      if (h.played && i === -1) state.played.push(h.id);
-      if (!h.played && i !== -1) state.played.splice(i, 1);
+      if (h.toPlayed) {
+        removeFrom(state.played, h.id);
+        removeFrom(state.bout, h.id);
+      } else {
+        state.played.push(h.id);
+        if (h.wasInBout) state.bout.push(h.id);
+      }
+    } else if (h.t === "take") {
+      h.cards.forEach(function (id) {
+        if (!isPlayed(id)) state.played.push(id);
+      });
+      state.bout = h.cards.slice();
+    } else if (h.t === "end") {
+      state.bout = h.cards.slice();
     } else if (h.t === "trump") {
       state.trump = h.from;
     } else if (h.t === "new" || h.t === "deck") {
@@ -253,6 +322,7 @@
       state.deck = s.deck;
       state.trump = s.trump;
       state.played = s.played;
+      state.bout = s.bout || [];
       renderTable();
     }
     saveState();
@@ -263,19 +333,19 @@
 
   function disarmNewGame() {
     clearTimeout(armTimer);
-    el.newGame.classList.remove("btn--danger");
+    el.newGame.classList.remove("pill--danger");
     el.newGame.textContent = "Новая игра";
   }
 
   el.newGame.addEventListener("click", function () {
-    if (el.newGame.classList.contains("btn--danger")) {
+    if (el.newGame.classList.contains("pill--danger")) {
       disarmNewGame();
       newGame();
-    } else if (state.played.length === 0 && state.trump === null) {
+    } else if (state.played.length === 0 && state.bout.length === 0 && state.trump === null) {
       newGame(); // нечего подтверждать
     } else {
-      el.newGame.classList.add("btn--danger");
-      el.newGame.textContent = "Сбросить игру?";
+      el.newGame.classList.add("pill--danger");
+      el.newGame.textContent = "Сбросить?";
       armTimer = setTimeout(disarmNewGame, 3500);
     }
   });
@@ -284,6 +354,9 @@
     disarmNewGame();
     undo();
   });
+
+  el.take.addEventListener("click", takeBout);
+  el.endBout.addEventListener("click", endBout);
 
   /* ---------- смена колоды ---------- */
 
@@ -312,9 +385,10 @@
 
   el.deckApply.addEventListener("click", function () {
     if (segChoice !== state.deck) {
-      pushHistory({ t: "deck", snap: JSON.stringify({ deck: state.deck, trump: state.trump, played: state.played }) });
+      pushHistory({ t: "deck", snap: JSON.stringify({ deck: state.deck, trump: state.trump, played: state.played, bout: state.bout }) });
       state.deck = segChoice;
       state.played = [];
+      state.bout = [];
       state.trump = null;
       saveState();
       renderTable();

@@ -23,9 +23,12 @@
       <span class="brand__mark" aria-hidden="true">Д</span>
       <span class="brand__name">Дурак<span class="brand__sub">помощник</span></span>
     </div>
-    <button class="deckswitch" id="deckBtn" type="button" aria-haspopup="dialog">
-      Колода <b id="deckBtnSize">36</b>
-    </button>
+    <div class="topbar__right">
+      <button class="pill" id="newGameBtn" type="button">Новая игра</button>
+      <button class="pill" id="deckBtn" type="button" aria-haspopup="dialog">
+        Колода <b id="deckBtnSize">36</b>
+      </button>
+    </div>
   </header>
 
   <section class="tally" aria-live="polite">
@@ -43,13 +46,14 @@
     </div>
   </section>
 
-  <p class="hint" id="hint" hidden>Нажмите на карту, когда её увидели на столе, — она уйдёт из счёта. Нажмите ещё раз, чтобы вернуть.</p>
+  <p class="hint" id="hint" hidden>Нажимайте на карты, вышедшие на стол. Кончился бой — «В отбой»; защитник забрал карты — «Взял», и они вернутся в игру.</p>
 
   <main class="table" id="table"></main>
 
-  <nav class="actions">
+  <nav class="actions" aria-label="Действия">
     <button class="btn" id="undoBtn" type="button" disabled>Отменить</button>
-    <button class="btn btn--primary" id="newGameBtn" type="button">Новая игра</button>
+    <button class="btn" id="takeBtn" type="button" disabled>Взял</button>
+    <button class="btn btn--primary" id="endBoutBtn" type="button" disabled>В отбой</button>
   </nav>
 
   <div class="sheet" id="deckSheet" hidden role="dialog" aria-modal="true" aria-labelledby="deckSheetTitle">

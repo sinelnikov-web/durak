@@ -1,5 +1,5 @@
 /* Сервис-воркер: офлайн-оболочка с версией кэша. */
-var CACHE_VERSION = "durak-helper-v1";
+var CACHE_VERSION = "durak-helper-v2";
 
 var APP_SHELL = [
   "./",

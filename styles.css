@@ -115,23 +115,37 @@ button:focus-visible {
   line-height: 1.1;
 }
 
-.deckswitch {
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex: none;
+}
+
+.pill {
   padding: 8px 12px;
   border: 1px solid var(--wine-700);
   border-radius: 999px;
   background: var(--wine-800);
   color: var(--text-dim);
   font-size: 14px;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
 }
 
-.deckswitch b {
+.pill b {
   color: var(--text);
   font-weight: 700;
 }
 
-.deckswitch:active { border-color: var(--gold-dim); }
+.pill:active { border-color: var(--gold-dim); }
+
+.pill--danger {
+  background: var(--carmine);
+  border-color: var(--carmine);
+  color: var(--ivory);
+  font-weight: 700;
+}
 
 /* ---------- счёт ---------- */
 
@@ -323,10 +337,21 @@ button:focus-visible {
 .chip.is-played {
   background: var(--wine-700);
   border-color: var(--wine-950);
-  color: var(--ivory);
-  opacity: 0.42;
+  color: rgba(243, 236, 220, 0.38);
   box-shadow: none;
   transform: scale(0.94);
+}
+
+/* карта текущего боя — золотая точка (уйдёт из игры только после «В отбой») */
+.chip.is-bout::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
 }
 
 .chip.is-played::after {
@@ -359,7 +384,9 @@ button:focus-visible {
   border-radius: 10px;
   border: 1px solid var(--wine-700);
   background: var(--wine-800);
-  font-size: 16px;
+  font-size: 15px;
+  padding: 0 4px;
+  white-space: nowrap;
   transition: opacity 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
 }
 
