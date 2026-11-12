@@ -24,7 +24,6 @@
       <span class="brand__name">Дурак<span class="brand__sub">помощник</span></span>
     </div>
     <div class="topbar__right">
-      <button class="pill" id="newGameBtn" type="button">Новая игра</button>
       <button class="pill" id="deckBtn" type="button" aria-haspopup="dialog">
         Колода <b id="deckBtnSize">36</b>
       </button>
@@ -32,14 +31,7 @@
   </header>
 
   <section class="tally" aria-live="polite">
-    <div class="tally__main">
-      <span class="tally__num" id="tallyIn">36</span>
-      <span class="tally__label">в игре</span>
-    </div>
-    <div class="tally__side">
-      <span class="tally__num tally__num--dim" id="tallyOut">0</span>
-      <span class="tally__label">сброшено</span>
-    </div>
+    <button class="pill tally__new-game" id="newGameBtn" type="button">Новая игра</button>
     <div class="tally__trump" id="trumpBadge">
       <span class="tally__label">козырь</span>
       <span class="tally__suit" id="trumpSuitGlyph">—</span>

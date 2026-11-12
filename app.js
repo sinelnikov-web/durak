@@ -51,8 +51,6 @@
 
   var el = {
     table: document.getElementById("table"),
-    tallyIn: document.getElementById("tallyIn"),
-    tallyOut: document.getElementById("tallyOut"),
     trumpSuit: document.getElementById("trumpSuitGlyph"),
     hint: document.getElementById("hint"),
     undo: document.getElementById("undoBtn"),
@@ -136,6 +134,10 @@
 
       var cards = document.createElement("div");
       cards.className = "suit__cards";
+      cards.style.setProperty("--card-count", RANKS[state.deck].length);
+      cards.setAttribute("role", "group");
+      cards.setAttribute("aria-label", "Карты — " + suit.name);
+      cards.tabIndex = 0;
 
       RANKS[state.deck].forEach(function (rank) {
         cards.appendChild(makeChip(rank, suit));
@@ -166,7 +168,13 @@
       (isPlayed(id) ? " is-played" : "");
     b.dataset.card = id;
     b.setAttribute("aria-pressed", isPlayed(id) ? "true" : "false");
-    b.innerHTML = '<span class="chip__rank">' + rank + '</span><span class="chip__suit">' + suit.glyph + "</span>";
+    var artRank = { "В": "J", "Д": "Q", "К": "K", "Т": "A" }[rank] || rank;
+    var image = document.createElement("img");
+    image.className = "chip__art";
+    image.src = "./cards/" + suit.id + artRank + ".svg";
+    image.alt = "";
+    image.draggable = false;
+    b.appendChild(image);
     updateChipLabel(b, id);
     b.addEventListener("click", function () { toggleCard(id); });
     chipNodes[id] = b;
@@ -178,11 +186,6 @@
   }
 
   function updateAll() {
-    // счётчики
-    var total = RANKS[state.deck].length * 4;
-    var out = state.played.length;
-    el.tallyIn.textContent = String(total - out);
-    el.tallyOut.textContent = String(out);
     el.deckBtnSize.textContent = String(state.deck);
 
     // козырь

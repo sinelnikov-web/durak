@@ -160,31 +160,9 @@ button:focus-visible {
   border-radius: 12px;
 }
 
-.tally__main,
-.tally__side {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding-right: 14px;
-}
-
-.tally__side {
-  border-left: 1px solid var(--wine-700);
-  padding-left: 14px;
-}
-
-.tally__num {
-  font-family: var(--font-card);
-  font-weight: 700;
-  font-size: 34px;
-  line-height: 1;
-  color: var(--gold);
-  font-variant-numeric: tabular-nums;
-}
-
-.tally__num--dim {
-  color: var(--text-dim);
-  font-size: 22px;
+.tally__new-game {
+  align-self: center;
+  min-height: 44px;
 }
 
 .tally__label {
@@ -222,24 +200,28 @@ button:focus-visible {
   color: var(--text-dim);
 }
 
-/* ---------- стол: масть = колонка (телефон), строка (широко) ---------- */
+/* ---------- стол: каждая масть — горизонтальный ряд ---------- */
 
 .table {
   flex: 1;
   width: 100%;
   max-width: 760px;
   margin: 0 auto;
-  padding: 6px 16px 16px;
+  padding: 0 2px;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
   align-content: start;
 }
 
 .suit {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+  --card-width: 76px;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-rows: 42px 1fr;
+  align-items: start;
+  column-gap: 2px;
+  row-gap: 0;
   min-width: 0;
 }
 
@@ -283,14 +265,28 @@ button:focus-visible {
 .suit.is-trump .suit__crown { display: block; }
 
 .suit__cards {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: grid;
+  grid-template-columns: repeat(calc(var(--card-count) - 1), minmax(26px, 1fr)) var(--card-width);
+  align-items: start;
+  overflow-x: auto;
+  padding: 0;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.suit__cards::-webkit-scrollbar { display: none; }
+
+.suit__cards:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 .suit__count {
-  margin-top: 2px;
-  align-self: flex-end;
+  grid-column: 1;
+  align-self: start;
+  justify-self: center;
   font-family: var(--font-card);
   font-weight: 700;
   font-size: 15px;
@@ -302,36 +298,30 @@ button:focus-visible {
 /* ---------- фишка-карта ---------- */
 
 .chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  width: 100%;
-  min-width: 0;
-  height: 42px;
-  padding: 0 4px;
-  border-radius: 8px;
-  border: 1px solid var(--ivory-edge);
-  background: linear-gradient(180deg, var(--ivory) 0%, #ece2cd 100%);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
-  font-family: var(--font-card);
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 1;
+  display: block;
+  width: var(--card-width);
+  height: auto;
+  aspect-ratio: 5 / 7;
+  padding: 0;
+  border-radius: 4px;
+  border: 0;
+  background: var(--ivory);
+  box-shadow: -1px 0 2px rgba(0, 0, 0, 0.3);
   position: relative;
-  transition: transform 0.12s ease, opacity 0.12s ease, background-color 0.12s ease;
+  isolation: isolate;
 }
 
-.chip__rank { letter-spacing: 0.01em; }
-.chip__suit { font-size: 16px; }
+.chip__art { display: block; width: 100%; height: 100%; border-radius: inherit; }
+
+.chip:focus-visible { z-index: 2; outline-offset: 0; }
 
 .chip.is-red { color: var(--carmine); }
 .chip.is-black { color: var(--ink); }
 
-.chip:active { transform: translateY(1px); }
+.chip:active { filter: brightness(0.9); }
 
 /* козырная масть — золотой кант */
-.chip.is-trump { border-color: var(--gold-dim); box-shadow: 0 1px 0 rgba(0,0,0,.28), inset 0 0 0 1px var(--gold-faint); }
+.chip.is-trump { outline: 1px solid var(--gold-dim); outline-offset: -1px; }
 
 /* сброшенная карта — легла рубашкой вверх */
 .chip.is-played {
@@ -339,17 +329,18 @@ button:focus-visible {
   border-color: var(--wine-950);
   color: rgba(243, 236, 220, 0.38);
   box-shadow: none;
-  transform: scale(0.94);
 }
+
+.chip.is-played .chip__art { opacity: 0.32; }
 
 /* карта текущего боя — золотая точка (уйдёт из игры только после «В отбой») */
 .chip.is-bout::before {
   content: "";
   position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 5px;
-  height: 5px;
+  top: 32px;
+  left: 4px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--gold);
 }
@@ -497,15 +488,10 @@ button:focus-visible {
 /* ---------- широко: масть = строка ---------- */
 
 @media (min-width: 720px) {
-  .table {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
   .suit {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 8px;
+    --card-width: 100px;
+    grid-template-columns: 50px minmax(0, 1fr);
+    grid-template-rows: 50px 1fr;
   }
 
   .suit__head {
@@ -515,23 +501,7 @@ button:focus-visible {
     flex: none;
   }
 
-  .suit__cards {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .chip {
-    width: auto;
-    min-width: 50px;
-    height: 48px;
-    font-size: 20px;
-    padding: 0 9px;
-  }
-
   .suit__count {
-    margin: 0 0 0 auto;
-    align-self: center;
     font-size: 16px;
   }
 
