@@ -1,5 +1,5 @@
 /* Сервис-воркер: офлайн-оболочка с версией кэша. */
-var CACHE_VERSION = "durak-helper-v2";
+var CACHE_VERSION = "durak-helper-v6";
 
 var APP_SHELL = [
   "./",
@@ -13,6 +13,12 @@ var APP_SHELL = [
   "./icons/icon-maskable-512.png",
   "./icons/apple-touch-icon.png"
 ];
+
+["S", "H", "D", "C"].forEach(function (suit) {
+  ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"].forEach(function (rank) {
+    APP_SHELL.push("./cards/" + suit + rank + ".svg");
+  });
+});
 
 self.addEventListener("install", function (e) {
   e.waitUntil(
